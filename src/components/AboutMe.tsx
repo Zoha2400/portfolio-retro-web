@@ -23,7 +23,7 @@ function ThreeScene() {
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(600, 300);
+        renderer.setSize(800, 400);
         const mountNode = document.getElementById('three-container');
         if (mountNode) mountNode.appendChild(renderer.domElement);
 
@@ -48,7 +48,7 @@ function ThreeScene() {
             '/models/walter_white.glb',
             (gltf: any) => {
                 const model = gltf.scene;
-                model.scale.set(0.75, 0.75, 0.75);
+                model.scale.set(0.65, 0.65, 0.65);
                 scene.add(model);
 
                 const directionalLight1 = new THREE.DirectionalLight('white', 0.5);
@@ -110,22 +110,33 @@ function ThreeScene() {
     }, []);
 
     return (
-        <div className="w-full flex items-center">
-            <div id="three-container" className="w-full h-[300px] "/>
+        <div className="w-full flex justify-center h-64 items-center">
+            <div id="three-container" className="w-5/12 h-[300px]"/>
+            <div className="w-6/12 text-white px-4">
+                <h1 className="text-4xl font-bold mb-4">
+                    Добро пожаловать в мою цифровую вселенную!
+                </h1>
+                <p className="text-lg leading-7">
+                    Здесь рождаются идеи и воплощаются самые смелые проекты. Это место, где код встречается с креативом,
+                    а технологии становятся инструментом искусства.
+                    Зайди, вдохновись и узнай, как из строчек кода создаются невероятные миры.
+                </p>
+            </div>
         </div>
+
     );
 }
 
 export default function AboutPage() {
     return (
         <>
-        <Head>
+            <Head>
                 <title>3D Scene</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
             </Head>
             <main className="flex flex-col items-center justify-center w-full h-screen bg-black">
                 <div className="relative w-full h-[80vh]">
-                    <ThreeScene />
+                    <ThreeScene/>
                 </div>
             </main>
         </>
