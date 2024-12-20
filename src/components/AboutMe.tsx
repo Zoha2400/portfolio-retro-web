@@ -32,6 +32,7 @@ function ThreeScene() {
         controls.dampingFactor = 0.04;
         controls.enableZoom = true;
 
+
         controls.minDistance = 9;
         controls.maxDistance = 11;
         controls.minPolarAngle = Math.PI / 2 - 0.108;
@@ -112,7 +113,7 @@ function ThreeScene() {
     return (
         <div className="w-full flex justify-center h-64 items-center">
             <div id="three-container" className="w-5/12 h-[300px]"/>
-            <div className="w-6/12 text-white px-4">
+            <div className="w-6/12 text-white px-6">
                 <h1 className="text-4xl font-bold mb-4">
                     Добро пожаловать в мою цифровую вселенную!
                 </h1>
