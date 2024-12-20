@@ -1,75 +1,133 @@
-'use client'
+'use client';
 
+import { useEffect } from 'react';
+import * as THREE from 'three';
+// @ts-ignore
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+// @ts-ignore
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import Head from 'next/head';
 
-import {useEffect} from "react";
-import {gsap} from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-
-gsap.registerPlugin(ScrollTrigger);
-
-
-function AboutMe() {
+function ThreeScene() {
     useEffect(() => {
-        const box = document.getElementById('box')
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('black');
 
-        gsap.to(box, {
-            x: 1000,
-            rotation: 360,
-            duration: 4,
-            ease: "power1.out",
-            scrollTrigger: {
-                trigger: box,
-                markers: true,
-                toggleActions: "play pause resume reverse",
-                scrub: true,
+        const camera = new THREE.PerspectiveCamera(
+            80,
+            600 / 300,
+            0.1,
+            1000
+        );
+        camera.position.set(0, 2, 10);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(600, 300);
+        const mountNode = document.getElementById('three-container');
+        if (mountNode) mountNode.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.04;
+        controls.enableZoom = true;
+
+        controls.minDistance = 9;
+        controls.maxDistance = 11;
+        controls.minPolarAngle = Math.PI / 2 - 0.108;
+        controls.maxPolarAngle = Math.PI / 2 + 0.108;
+        const light = new THREE.HemisphereLight("white", 'black');
+        scene.add(light);
+
+        const directionalLight = new THREE.DirectionalLight("white");
+        directionalLight.position.set(1, 1, 1).normalize();
+        scene.add(directionalLight);
+
+        const loader = new GLTFLoader();
+        loader.load(
+            '/models/walter_white.glb',
+            (gltf: any) => {
+                const model = gltf.scene;
+                model.scale.set(0.75, 0.75, 0.75);
+                scene.add(model);
+
+                const directionalLight1 = new THREE.DirectionalLight('white', 0.5);
+                directionalLight1.position.set(5, 10, 5);
+                directionalLight1.color.setHSL(0.6, 1, 0.9);
+                scene.add(directionalLight1);
+
+                const directionalLight2 = new THREE.DirectionalLight('white', 0.5);
+                directionalLight2.position.set(-5, 10, -5);
+                directionalLight2.color.setHSL(0.1, 1, 0.5);
+                scene.add(directionalLight2);
+
+                let hue1 = 15;
+                let hue2 = 0.9;
+
+                function animateGradient() {
+                    hue1 += 0.005;
+                    hue2 += 0.005;
+
+                    if (hue1 > 1) hue1 -= 1;
+                    if (hue2 > 1) hue2 -= 1;
+
+                    directionalLight1.color.setHSL(hue1, 1, 0.5);
+                    directionalLight2.color.setHSL(hue2, 1, 0.5);
+                }
+
+                function animateModel() {
+                    model.rotation.y -= 0.0002;
+                }
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    animateModel();
+                    animateGradient();
+                    controls.update();
+                    renderer.render(scene, camera);
+                }
+
+                animate();
+            },
+            undefined,
+            (error: any) => {
+                console.error('Ошибка загрузки модели:', error);
             }
-        })
-    }, []);
-    return (
-        <div
-            className="bg-black w-full h-auto p-2 flex flex-col items-start justify-center"
-        >
-            <div className="w-[500px] flex ">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti, nam, totam? Ab accusamus accusantium
-                adipisci aliquid amet consectetur cupiditate esse est explicabo in ipsum magni necessitatibus non
-                obcaecati perspiciatis, possimus quaerat quam, quas quidem quod similique sit, soluta sunt unde
-                veritatis voluptas voluptate? Aliquid, aspernatur consectetur cumque dolorem labore provident suscipit
-                unde. Ab beatae doloribus ex, fugiat inventore nobis reprehenderit sapiente sit voluptatem! A, ad
-                aliquam aperiam asperiores assumenda atque corporis culpa cupiditate doloribus earum eius enim esse
-                excepturi exercitationem explicabo illum ipsum iste iure magnam natus necessitatibus nesciunt non
-                numquam odio officia omnis quod reiciendis sint suscipit tempora veniam voluptates voluptatibus
-                voluptatum! A accusamus amet consequuntur doloribus eaque eveniet fugiat illum ipsum maxime molestias
-                neque nesciunt nihil non nostrum obcaecati, optio perspiciatis placeat quam quasi quia quisquam
-                reiciendis sit! A atque consequuntur error eveniet maiores, necessitatibus numquam rerum sequi
-                temporibus ut veniam veritatis. Aspernatur eius sed velit voluptatem! Adipisci alias facilis illum
-                laboriosam magnam, natus rem rerum ullam veritatis. Accusamus ad animi architecto at commodi
-                consequuntur cum delectus dolore et eum ex fuga harum laboriosam, minima nam non obcaecati placeat
-                quaerat quod reprehenderit rerum sequi similique suscipit ullam voluptate. Ab at beatae cumque dolore
-                dolorem doloribus earum eos eveniet ex expedita, fugit ipsum natus officia possimus suscipit voluptate
-                voluptatum. Aliquid blanditiis delectus dignissimos facilis incidunt inventore maiores, modi numquam
-                placeat porro provident qui repellat, sint unde voluptatum? Aut distinctio est eveniet harum libero
-                mollitia non optio pariatur sit sunt. A iste qui quisquam rem vero. A, alias, aliquam aspernatur
-                consequatur ducimus ea facere ipsa iste iusto maiores maxime molestiae molestias nesciunt nostrum odit
-                perferendis praesentium quasi qui quia quidem recusandae rem, repudiandae suscipit totam vel. Architecto
-                consectetur dicta ea eaque facilis id iure magni, maxime nisi omnis, possimus quo ratione recusandae,
-                repellendus totam vel veniam! Aperiam commodi cupiditate excepturi laboriosam tempora. Accusamus
-                explicabo labore maiores nemo possimus repellendus rerum voluptatibus? Deserunt doloribus esse fuga
-                minus quae quasi veniam! Adipisci alias dolores enim, impedit iusto porro quidem quos. Blanditiis
-                deserunt doloremque eaque est inventore itaque minus nobis nostrum odit quas quo similique, sit velit
-                voluptas voluptatem. A amet commodi, cum doloremque eos error esse eveniet hic, id illo, inventore iste
-                laboriosam minima minus nam natus nesciunt numquam officiis optio pariatur provident quae quisquam
-                reiciendis sequi sit soluta tempore tenetur unde veniam veritatis voluptas voluptatem voluptates
-                voluptatum. Autem explicabo obcaecati quis sequi voluptas? At blanditiis excepturi laboriosam laudantium
-                nemo pariatur provident quam sunt tempore voluptas? Autem beatae commodi eligendi eos error. Aliquid
-                aperiam dolorem eaque esse fuga fugit inventore iste labore magnam modi, nemo numquam optio pariatur
-                quae quam quis sed. Accusamus assumenda blanditiis commodi facilis fugiat in ipsam, minima qui, quidem
-                quod, reprehenderit sed! Ducimus magnam obcaecati pariatur repudiandae sit.
-            </div>
-            <div className="w-14 h-14 bg-red-500" id="box"></div>
+        );
 
+        const handleResize = () => {
+            camera.aspect = 2
+            camera.updateProjectionMatrix();
+            renderer.setSize(600, 300);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            renderer.dispose();
+        };
+    }, []);
+
+    return (
+        <div className="w-full flex items-center">
+            <div id="three-container" className="w-full h-[300px] "/>
         </div>
     );
 }
 
-export default AboutMe;
+export default function AboutPage() {
+    return (
+        <>
+        <Head>
+                <title>3D Scene</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            </Head>
+            <main className="flex flex-col items-center justify-center w-full h-screen bg-black">
+                <div className="relative w-full h-[80vh]">
+                    <ThreeScene />
+                </div>
+            </main>
+        </>
+    );
+}
